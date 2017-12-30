@@ -1,0 +1,14 @@
+{
+    "PYBLISHPLUGINPATH": [
+        "{PIPELINE}\\pyblish\\plugins\\nuke"
+    ],
+    "NUKE_PATH": [
+        "{PIPELINE}\\support_files\\nuke",
+        "{PIPELINE}\\python_modules",
+        "{PIPELINE_EX}\\python_modules\\pyblish_nuke",
+        "{PIPELINE_EX}\\python_modules\\pyblish_nuke\\nuke_path"
+    ],
+    "PYTHONPATH": [
+        "{STUDIO_REPOS}\\nuke\\scripts"
+    ]
+}

@@ -52,6 +52,9 @@ def dynamic_environment(event):
     env_files = []
 
     for env_path in env_paths:
+
+        print "\n>>> {}".format(env_path)
+
         # determine config file for version independent environment
         app_name, app_variant = app['identifier'].split('_')
         app_file_name = '{}.json'.format(app_name)
@@ -60,20 +63,23 @@ def dynamic_environment(event):
         # determine config file for version dependent environment
         variant_file_name = '{}.json'.format(app['identifier'])
         env_files.append(os.path.join(env_path, variant_file_name))
+        print "\n>>> env_files: {}".format(env_files)
 
         # collect all parents from the task
         parents = []
         for item in task['link']:
             parents.append(session.get(item['type'], item['id']))
-
+        print "\n>>> parents: {}".format(parents)
         # collect all the 'environment' attributes from parents
         enviro_attr = None
         for parent in parents:
             # check if the attribute is empty, if not use it
             if parent['custom_attributes']['environment']:
+                print "\n>>> parent: {}".format(parent)
                 enviro_attr = parent['custom_attributes']['environment']
+                print "\n>>> enviro_attr: {}".format(enviro_attr)
 
-        if not enviro_attr:
+        if not enviro_attr and not env_files:
             logger.info('No additional environmnet found.')
             return
 
@@ -88,7 +94,9 @@ def dynamic_environment(event):
             tool = tool.strip()
             tool_version = '_'.join([tool, app_variant])
             tool_env_file = '{}.json'.format(tool_version)
+            print "\n>>> tool_env_file: {}".format(tool_env_file)
             env_files.append(os.path.join(env_path, tool_env_file))
+
 
     env_add = []
 
@@ -97,6 +105,7 @@ def dynamic_environment(event):
         try:
             logger.info('Adding {} to the environment'.format(env_file))
             env_add = load_env(env_file)
+            print "\n>>> env_add: {}".format(env_add)
         except:
             logger.info('Unable to find the environment file.')
             logger.info('Make sure that {} exists.'.format(env_file))
@@ -106,6 +115,7 @@ def dynamic_environment(event):
         if env_add:
             for variable in env_add:
                 for path in env_add[variable]:
+                    print "\n>>> env_add[variable].path: {}".format(path)
                     keys = re.findall(r'{.*?}', path)
                     for key in keys:
                         found_key = os.path.abspath(os.environ.get(key[1:-1]))
