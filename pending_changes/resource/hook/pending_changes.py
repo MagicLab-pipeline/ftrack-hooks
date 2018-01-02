@@ -41,7 +41,7 @@ def callback(event):
             # To Pending Changes
             if new_status.getName().lower() == "pending changes":
 
-                user = ftrack.User(id=event["source"]["user"]["id"])
+                user = ftrack.User(id=event["source"]["user"]["username"])
                 job = ftrack.createJob("Version Up Tasks", "queued", user)
                 job.setStatus("running")
 

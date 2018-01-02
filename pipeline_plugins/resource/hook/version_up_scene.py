@@ -16,7 +16,7 @@ def async(fn):
 def create_job(event):
 
     job = ftrack.createJob("Version Up Tasks", "queued",
-                           ftrack.User(id=event["source"]["user"]["id"]))
+                           ftrack.User(id=event["source"]["user"]["username"]))
     job.setStatus("running")
 
     try:

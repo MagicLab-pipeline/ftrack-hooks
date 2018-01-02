@@ -123,7 +123,7 @@ class Action(ftrack.Action):
 
             f.write(output)
 
-        user = ftrack.User(id=event["source"]["user"]["id"])
+        user = ftrack.User(id=event["source"]["user"]["username"])
         job = ftrack.createJob("Breakdown", "done", user)
         try:
             job.createAttachment(file_path)

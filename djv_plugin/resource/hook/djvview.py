@@ -10,7 +10,6 @@ from operator import itemgetter
 import ftrack
 import ftrack_connect.application
 
-
 class DJVViewAction(object):
     """Launch DJVView action."""
 
@@ -161,11 +160,13 @@ class DJVViewAction(object):
             }
 
         data = event["data"]
+
         data["items"] = []
 
         # Starting a job to show user the progress of scanning for files.
         job = ftrack.createJob("DJV: Scanning for files.", "queued",
-                               ftrack.User(id=event["source"]["user"]["id"]))
+                               ftrack.User(id=event["source"]["user"]["username"]))
+
         job.setStatus("running")
 
         try:

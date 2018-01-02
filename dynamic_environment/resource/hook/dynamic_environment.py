@@ -34,14 +34,17 @@ def appendPath(path, key, environment):
 def dynamic_environment(event):
     '''Modify the application environment.'''
     data = event['data']
+    print "\n>>> data: {}".format(data)
     app = data['application']
-
+    print "\n>>> app: {}".format(app)
     logger.info('APP INFO:{}'.format(app))
 
     taskid = data['context']['selection'][0].get('entityId')
+    print "\n>>> taskid: {}".format(taskid)
     session = ftrack_api.Session()
+    print "\n>>> session: {}".format(session)
     task = session.query('Task where id is {0}'.format(taskid)).one()
-
+    print "\n>>> task: {}".format(task)
     # get location of json environmnets from env var
     try:
         env_paths = os.environ['FTRACK_APP_ENVIRONMENTS'].split(os.pathsep)
@@ -53,10 +56,15 @@ def dynamic_environment(event):
 
     for env_path in env_paths:
 
-        print "\n>>> {}".format(env_path)
+        print "\n>>> env_path: {}".format(env_path)
 
         # determine config file for version independent environment
-        app_name, app_variant = app['identifier'].split('_')
+        print "\n>>> app['identifier']: {}".format(app['identifier'])
+        if not app['identifier'].startswith('nuke_studio'):
+            app_name, app_variant = app['identifier'].split('_')
+        else:
+            _app, name, app_variant = app['identifier'].split('_')
+            app_name = '_'.join([_app, name])
         app_file_name = '{}.json'.format(app_name)
         env_files.append(os.path.join(env_path, app_file_name))
 
@@ -85,18 +93,20 @@ def dynamic_environment(event):
 
         logger.debug('ENVIRO Attr:{}'.format(enviro_attr))
 
-        # separate list of tools from environmnet attr to individual tools
-        environments_to_add = enviro_attr.split(',')
+        if enviro_attr:
+            # separate list of tools from environmnet attr to individual tools
+            environments_to_add = enviro_attr.split(',')
 
-        # construct the path to corresponding json file by adding
-        # tool, app version and json extension
-        for tool in environments_to_add:
-            tool = tool.strip()
-            tool_version = '_'.join([tool, app_variant])
-            tool_env_file = '{}.json'.format(tool_version)
-            print "\n>>> tool_env_file: {}".format(tool_env_file)
-            env_files.append(os.path.join(env_path, tool_env_file))
-
+            # construct the path to corresponding json file by adding
+            # tool, app version and json extension
+            for tool in environments_to_add:
+                tool = tool.strip()
+                env_files.append(os.path.join(tool, '{}.json'.format(app_name)))
+                tool_version = os.path.join(tool, '_'.join([app_name, app_variant]))
+                tool_env_file = '{}.json'.format(tool_version)
+                print "\n>>> tool_env_file: {}".format(tool_env_file)
+                env_files.append(os.path.join(env_path, tool_env_file))
+            print "\n>>> env_files: {}".format(env_files)
 
     env_add = []
 

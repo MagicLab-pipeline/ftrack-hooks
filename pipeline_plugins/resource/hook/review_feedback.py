@@ -133,7 +133,7 @@ class ReviewFeedback(ftrack.Action):
     @async
     def create_job(self, event):
         job = ftrack.createJob("Generating Feedback", "queued",
-                               ftrack.User(id=event["source"]["user"]["id"]))
+                               ftrack.User(id=event["source"]["user"]["username"]))
         job.setStatus("running")
 
         try:
